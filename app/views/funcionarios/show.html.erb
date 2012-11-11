@@ -1,0 +1,17 @@
+<h2>Funcionário</h2>
+<p>
+	<b>Nome: </b>
+	<%= @funcionario.nome %>
+</p>
+<p>
+	<b>Departamento: </b>
+	<%= @funcionario.departamento.nome if @funcionario.departamento %> 
+</p>
+<p>
+	<b>Admissão: </b>
+	<%= @funcionario.admissao.strftime("%d/%m/%Y") %>
+</p>
+
+<div class="form-actions">
+  <%= link_to 'Voltar', funcionarios_path %>
+</div>

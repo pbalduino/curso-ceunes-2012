@@ -1,0 +1,83 @@
+#!/bin/bash
+# Este script serve para fazer um sorteio baseado num arquivo texto dos inscritos
+# Ele exclui o nome do sorteado da lista de inscritos, não permitindo termos ganhadores repetidos
+# Autor: Raimundo Alves Portela Filho
+# rai3mb@gmail.com
+# Desenvolvido em : 09/04/2011
+# -------------------------------------------------------------------
+while :
+do
+	clear
+	echo "
+==========================================================================
+SCRIPT - PARA SORTEIO DE GANHADOR BASEADO NA LINHA DO ARQUIVO INCRITOS.TXT
+--------------------------------------------------------------------------
+
+[ 1 ] - FAZER SORTEIO
+[ 2 ] - VER ULTIMO SORTEADO
+	
+[ 99 ] - SAIR
+
+==========================================================================
+                   
+DIGITE SUA OPÇÃO:"
+
+	read OP
+	test "$OP" = "1" || test "$OP" = "2" || test "$OP" = "99"
+	if [ "$?" -eq 1 ]; then
+		echo "ESTA OPÇÃO NÃO EXISTE"
+		sleep 2
+	else
+		break
+	fi
+done
+
+case "$OP" in
+	1) 
+		ARQUIVO="inscritos.txt"
+		test -f "$ARQUIVO"
+		if [ "$?" -eq 1 ]; then
+			echo "Não foi encontrado o arquivos 'inscritos.txt', que contém a lista dos inscritos"
+			exit
+		fi
+
+		QTD_LINHAS=$(cat "$ARQUIVO" | wc -l)
+		if [ "$QTD_LINHAS" -eq 0 ]; then
+			echo "Não há registros no arquivo"
+			exit
+		fi
+
+		LINHA=$[RANDOM%$QTD_LINHAS+1]
+
+		GANHADOR=$(cat "$ARQUIVO" | head -n $LINHA | tail -n 1)
+		
+		sed -i /"$GANHADOR"/d "$ARQUIVO"
+
+		echo "GANHADOR : $GANHADOR"
+		echo "$GANHADOR" >> ganhadores.txt
+		echo
+		echo
+		echo "PRESSIONE UMA TECLA PARA CONTINUAR!"
+		read CONFIRM
+		./sorteia
+
+	;;
+	
+	2)
+		echo "O ÚLTIMO GANHADOR FOI:" 
+		ULT_LINHA=$(cat ganhadores.txt | wc -l)
+		cat ganhadores.txt | head -n $ULT_LINHA | tail -n 1
+		echo
+		echo
+		echo "PRESSIONE UMA TECLA PARA CONTINUAR!"
+		read CONFIRM
+		./sorteia
+
+	;;
+
+	99)
+		echo "Saindo..."
+		sleep 1
+		clear
+		exit
+esac
